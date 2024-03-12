@@ -1,3 +1,12 @@
 @layer vocs_preflight { @tailwind base; }
 @tailwind components;
 @tailwind utilities;
+
+
+.card_bg {
+    background: var(--vocs-color_background4);
+}
+
+.card_bg:hover {
+    background: var(--vocs-color_background3);
+}

@@ -33,9 +33,9 @@ const Card: FC<PropsWithChildren<CardProps>> = ({
   return (
     <a href={href}>
       <div
-        className={`relative flex flex-col items-start text-left mt-6  shadow-md bg-clip-border rounded-xl ${
-          variant === "small" ? "max-w-96" : "w-96"
-        }  bg-[#323035] hover:bg-[#2e2c31]`}
+        className={`flex flex-col items-start text-left mt-6  shadow-md bg-clip-border rounded-xl ${
+          variant === "small" ? "max-w-96" : "max-w-96 md:w-72 lg:w-96"
+        }  card_bg`}
       >
         <div className="p-6">
           {Icon !== undefined && Icon !== null ? (

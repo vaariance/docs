@@ -29,9 +29,9 @@ const projects: ProjectsProps[] = [
 
 export default function Projects() {
   return (
-    <div className="max-w-screen-xl">
+    <div className="w-full lg:w-[1280px]">
       <h2 className="text-2xl text-left font-bold">Packages</h2>
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.map((project) => (
           <Project
             key={project.title}
