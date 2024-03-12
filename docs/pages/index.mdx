@@ -1,0 +1,30 @@
+---
+layout: minimal
+---
+
+import { HomePage } from "vocs/components";
+import Title from "../components/Title";
+import DartInstall from "../components/DartInstallPackage";
+import Projects from "../components/Projects";
+
+<HomePage.Root>
+  <Title>Variance</Title>
+  <DartInstall />
+  <HomePage.Description>
+    Variance is a Flutter SDK designed to simplify interaction with
+    Ethereum-based blockchains and enables flutter developers to implement
+    account abstraction with minimal efforts. It provides functionalities such
+    as encoding and decoding ABI data, handling Ethereum transactions, sending
+    user operations, interacting with bundlers and paymasters, working with
+    ERC20 and ERC721 tokens, and managing Ethereum smart accounts.
+  </HomePage.Description>
+  <HomePage.Buttons>
+    <HomePage.Button href="/overview" variant="accent">
+      Overview
+    </HomePage.Button>
+    <HomePage.Button href="https://github.com/vaariance/variance_dart">
+      GitHub
+    </HomePage.Button>
+  </HomePage.Buttons>
+  <Projects />
+</HomePage.Root>
