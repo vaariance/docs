@@ -92,6 +92,35 @@ While Entry Points, Bundlers, and Paymasters can operate independently, they oft
 
 5. The Paymaster associated with the Entry Point handles the payment of transaction fees.
 
+```
++--------------------+
+|   Smart Contract   |
+|       Account      |
++--------------------+
+            |
+            | User Operation
+            v
++--------------------+
+|      Bundler       |
++--------------------+
+            |
+            | Bundled User Operations
+            v
++--------------------+
+|     Entry Point    |
++--------------------+
+            |
+            | Validate and Execute
+            |                    +----------------+
+            +--------------------+                |
+                                 |  Paymaster     |
+                                 +----------------+
+                                 | Validate       |
+                                 | Pay Fees       |
+                                 | Accounting     |
+                                 +----------------+
+```
+
 This workflow demonstrates how the different components collaborate to facilitate efficient and cost-effective transaction processing while abstracting away the complexities from the user's perspective.
 
 ### Customization and Extensibility

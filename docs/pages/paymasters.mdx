@@ -1,6 +1,6 @@
 # Paymasters
 
-Paymasters are a crucial component of the account abstraction model, enabling the decoupling of transaction fee payment from user accounts. In this documentation page, we'll delve deeper into the technical aspects of Paymasters, exploring their functions, workflow, and potential use cases.
+Paymasters are a crucial component of the account abstraction model, enabling the decoupling of transaction fee payment from user accounts. Let us dive deeper into the technical aspects of Paymasters, exploring their functions, workflow, and potential use cases.
 
 ## The Role of Paymasters
 
@@ -8,12 +8,143 @@ In the traditional Ethereum model, users must hold and manage Ether (ETH) in the
 
 Paymasters aim to solve this problem by acting as intermediaries that handle the payment of transaction fees on behalf of user accounts. This decoupling of fee payment from user accounts simplifies the user experience and opens up new possibilities for fee models and sponsorship schemes.
 
+## Variations of Paymasters
+
+currently there are 2 most widely used variations of paymasters, the token paymaster and the verifying paymaster. However, paymasters are not limited to those, more variations can be developed for different purposes.
+
+### Token Paymaster
+
+Token Paymasters are a specific type of Paymaster contract that facilitates the payment of transaction fees using ERC-20 tokens instead of Ether (ETH). In the traditional Ethereum model, users must hold and spend ETH to pay for gas fees. However, Token Paymasters enable users to pay fees with alternative tokens, potentially simplifying the user experience and reducing the need to manage multiple cryptocurrencies.
+
+#### With a Token Paymaster, the flow typically works as follows:
+
+1. The user initiates a transaction or operation through their contract account.
+
+2. The Token Paymaster validates the user operation and checks if the user has sufficient token balance to cover the transaction fees.
+
+3. If the user has enough tokens, the Token Paymaster approves the operation and pays the gas fees to the Entry Point contract by transferring the required amount of tokens.
+
+4. The Entry Point executes the user operation on the blockchain, and the transaction fees are effectively paid using the tokens supplied by the Token Paymaster.
+
+Token Paymasters can be particularly useful in scenarios where users primarily hold and interact with specific ERC-20 tokens, such as within decentralized finance (DeFi) protocols or token-based ecosystems. By allowing users to pay fees directly with the tokens they already hold, Token Paymasters can streamline the user experience and reduce friction.
+
+### Verifying Paymasters
+
+Verifying Paymasters are a type of Paymaster contract that introduces an additional layer of security and validation for user operations. Unlike regular Paymasters, which primarily focus on fee payment, Verifying Paymasters also perform additional checks and verifications on the user operation itself.
+
+The main purpose of a Verifying Paymaster is to ensure that user operations meet certain criteria or conform to specific rules before being executed on the blockchain. This verification process can help prevent unauthorized or malicious transactions, enforce access controls, or ensure compliance with specific requirements or protocols.
+
+Verifying Paymasters can be employed in various scenarios where additional security or compliance measures are required, such as in regulated industries, enterprise applications, or high-value transactions. They can also be used to enforce specific business logic or governance rules within decentralized applications (dapps) or protocols.
+
+### Differences
+
+While both Token Paymasters and Verifying Paymasters are specialized types of Paymaster contracts, they have distinct differences in their primary focus and functionality:
+
+::::steps
+
+### Primary Purpose
+
+Token Paymasters are primarily focused on enabling fee payment using ERC-20 tokens, while Verifying Paymasters concentrate on implementing additional validation and verification checks for user operations.
+
+### Fee Payment
+
+Token Paymasters facilitate fee payment using ERC-20 tokens, while Verifying Paymasters can handle fee payment using either ETH or tokens, depending on their implementation.
+
+### Validation Scope
+
+Token Paymasters typically perform basic validations related to token balances and allowances, while Verifying Paymasters can implement more extensive and complex validation logic tailored to specific requirements or use cases.
+
+### Use Cases
+
+Token Paymasters are well-suited for token-based ecosystems or DeFi protocols, where users primarily hold and interact with ERC-20 tokens. Verifying Paymasters are more applicable in scenarios that require additional security, compliance, or governance measures, such as regulated industries, enterprise applications, or high-value transactions.
+
+::::
+
 ## Technical Functions of Paymasters
 
 Paymasters are smart contracts that implement the following core functions:
 
-::::steps
-
 ### validatePaymasterUserOp
 
-::::
+This function is called by the Entry Point contract to validate and authorize incoming user operations (transactions). The Paymaster can perform custom checks and validations based on its specific rules and requirements.
+
+```solidity
+function validatePaymasterUserOp(
+        PackedUserOperation calldata userOp,
+        bytes32 userOpHash,
+        uint256 maxCost
+    ) external override returns (bytes memory context, uint256 validationData) {
+        _requireFromEntryPoint();
+        return _validatePaymasterUserOp(userOp, userOpHash, maxCost); // [!code focus]
+    }
+```
+
+### postOp
+
+The postOp function enables the Paymaster to perform any necessary post-execution tasks or bookkeeping related to the user operation. It serves as a callback or a hook that the Paymaster can utilize to update its internal state, record data, or perform any additional operations after the user operation has been processed.
+
+```solidity
+function postOp(
+        PostOpMode mode,
+        bytes calldata context,
+        uint256 actualGasCost,
+        uint256 actualUserOpFeePerGas
+    ) external override {
+        _requireFromEntryPoint();
+        _postOp(mode, context, actualGasCost, actualUserOpFeePerGas); // [!code focus]
+    }
+```
+
+- `mode` - The mode of the post-operation. This can be either **`PostOpMode.opSucceeded`**, **`PostOpMode.opReverted`** or **`PostOpMode.postOpReverted`**.
+
+- `context` - The context data returned from the [`validatePaymasterUserOp`](/paymasters#validatepaymasteruserop) function.
+
+- `actualGasCost` - The actual gas cost incurred by the user operation.
+
+- `actualUserOpFeePerGas` - The actual user operation fee per gas.
+
+### The paymasterAndData Field
+
+In the account abstraction model, user operations are typically initiated with a `paymasterAndData` field. This field is a concatenation of the Paymaster contract address and additional data specific to the Paymaster.
+
+#### The paymasterAndData field consists of the following components
+
+- `Paymaster Address`: The first 20 bytes (or 40 hex characters) of the paymasterAndData field represent the Ethereum address of the Paymaster contract that will handle the fee payment and validation for the user operation.
+
+- `Verification gas limit`: The next 32 bytes (or 64 hex characters) of the paymasterAndData field represent the maximum amount of gas that the Paymaster is willing to spend on validating the user operation. This value is used by the Entry Point contract to limit the gas consumption of the Paymaster's validation process.
+  :::warning
+  (This field is only present in the entrypoint version 0.7.0 upwards)
+  :::
+
+- `postOp gas limit`: The next 32 bytes (or 64 hex characters) of the paymasterAndData field represent the maximum amount of gas that the Paymaster is willing to spend on the postOp function. This value is used by the Entry Point contract to limit the gas consumption of the Paymaster's post-operation tasks.
+  :::warning
+  (This field is only present in the entrypoint version 0.7.0 upwards)
+  :::
+- `Paymaster-specific Data`: The remaining bytes (or hex characters) of the `paymasterAndData` field can contain any additional data that the Paymaster requires or expects. This data can be used by the Paymaster for various purposes, such as:
+  - Passing additional parameters or configuration data to the Paymaster.
+  - Providing context or auxiliary information for the Paymaster to process the operation correctly.
+
+> The specific format and interpretation of the Paymaster-specific data are defined by the implementation of the Paymaster contract. Different Paymasters may use this data field differently, depending on their requirements and use cases.
+
+For example, a Paymaster implementing a subscription-based fee model might encode the user's subscription ID or plan details in the Paymaster-specific data. Another Paymaster handling sponsored transactions could use this data to identify the sponsor or promotion associated with the user operation.
+
+## Paymaster Use Cases and Fee Models
+
+Paymasters enable a wide range of fee models and use cases, unlocking new possibilities for user experiences and business models. Here are some examples:
+
+- `Sponsored Transactions`: Paymasters can sponsor transactions, either partially or fully, subsidizing the fees for users. This model can be useful for incentivizing user adoption, rewarding loyal users, or promoting specific actions within a decentralized application (dapp).
+- `Subscription-based Fees`: Paymasters can implement subscription-based fee models, where users pay a recurring fee (e.g., monthly or yearly) to access a service or platform. This model can provide a steady revenue stream for service providers while simplifying the user experience.
+- `Usage-based Pricing`: Paymasters can charge fees based on usage or consumption metrics, such as the number of transactions, the complexity of operations, or the amount of data processed. This model aligns well with pay-as-you-go or metered services.
+- `Affiliate or Referral Programs`: Paymasters can implement affiliate or referral programs, where users can earn discounts or sponsored transactions by referring new users or performing specific actions.
+- `Whitelisting and Access Control`: Paymasters can enforce whitelisting and access control rules, allowing only authorized users or contracts to initiate transactions or access specific features or services.
+- `Integration with External Payment Systems`: Paymasters can integrate with external payment systems, such as traditional payment processors or cryptocurrency gateways, enabling users to pay for transaction fees using various payment methods.
+
+These use cases and fee models demonstrate the versatility and potential of Paymasters in enabling new user experiences, business models, and revenue streams within the Ethereum ecosystem.
+
+## Paymaster Customization and Extensibility
+
+Paymasters can be highly customized and extended to meet specific requirements or use cases. Developers can implement custom validation logic, fee calculation algorithms, and payment schemes within the Paymaster contract.
+
+Additionally, Paymasters can integrate with external systems or services, such as identity providers, reputation systems, or off-chain data sources like banks and tradfi service providers, to enhance their functionality and decision-making capabilities.
+
+This extensibility allows for innovation and experimentation, driving the evolution of Paymasters and enabling new revenue models and user experiences within the account abstraction framework.
