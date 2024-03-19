@@ -31,7 +31,7 @@ export default function DartInstall() {
             <span>variance_dart</span>
           </span>
           <span
-            className="flex text-white cursor-pointer w-5 h-5 hover:text-gray-400 duration-200"
+            className="flex  cursor-pointer w-5 h-5 copy_icon duration-200"
             onClick={copyToClipboard}
             onTouchStart={copyToClipboard}
           >

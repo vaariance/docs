@@ -10,3 +10,7 @@
 .card_bg:hover {
     background: var(--vocs-color_background3);
 }
+
+.copy_icon {
+    color: var(--vocs-color_text);
+}

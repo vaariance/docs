@@ -36,8 +36,12 @@ export default defineConfig({
       link: "/overview",
     },
     {
-      text: "Account Abstraction",
+      text: "Account Abstraction I",
       link: "/account-abstraction",
+    },
+    {
+      text: "Account Abstraction II",
+      link: "/account-abstraction-2",
     },
     {
       text: "Paymasters",
