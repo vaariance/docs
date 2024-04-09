@@ -94,8 +94,7 @@ While Entry Points, Bundlers, and Paymasters can operate independently, they oft
 
 ```
 +--------------------+
-|   Smart Contract   |
-|       Account      |
+|       User         |
 +--------------------+
             |
             | User Operation
@@ -113,12 +112,16 @@ While Entry Points, Bundlers, and Paymasters can operate independently, they oft
             | Validate and Execute
             |                    +----------------+
             +--------------------+                |
-                                 |  Paymaster     |
-                                 +----------------+
-                                 | Validate       |
-                                 | Pay Fees       |
-                                 | Accounting     |
-                                 +----------------+
+            |                    |  Paymaster     |
+            |                    +----------------+
+            |                    | Validate       |
+            |                    | Pay Fees       |
+            |                    | Accounting     |
+            v                    +----------------+
++--------------------+
+|   Smart Contract   |
+|       Account      |
++--------------------+
 ```
 
 This workflow demonstrates how the different components collaborate to facilitate efficient and cost-effective transaction processing while abstracting away the complexities from the user's perspective.
