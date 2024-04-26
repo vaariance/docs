@@ -1,3 +1,153 @@
 # Get started
 
-Hello world!
+The Variance SDK is a powerful Dart package that simplifies interaction with Ethereum-based blockchains. In this guide, we'll walk through the steps to set up and start using the SDK in your project.
+
+::::steps
+
+### Installation
+
+To use the Variance SDK in your Flutter project, open your terminal and run the following command:
+
+```bash
+flutter pub add variance_dart
+flutter pub add web3_signers
+
+# optionally
+flutter pub add web3dart
+```
+
+### Chain Configuration
+
+First, import the necessary classes and configure the blockchain network you want to work with:
+
+```dart
+import 'package:variance/variance.dart';
+
+// Configure the chain
+const String rpcUrl = 'http://localhost:8545';
+const String bundlerUrl = 'http://localhost:3000/rpc';
+const Uint256 salt = const Uint256.zero;
+
+final Chain chain = Chains.getChain(Network.localhost)
+  ..jsonRpcUrl = rpcUrl
+  ..bundlerUrl = bundlerUrl;
+```
+
+The `Chains` class provides a list of available networks, including `ethereum`, `polygon`, `optimism`, `base`, `arbitrumOne`, `linea`, `opBnB`, `scroll`, and testnets like `sepolia`, `mumbai`, and `baseTestnet`. You can also use `localhost` for local development.
+
+### Signer Setup
+
+The Variance SDK supports various types of signers, which are responsible for signing UserOperation hashes to be verified on-chain. The signers are managed in a separate package called [web3signers](https://pub.dev/packages/web3_signers), which provides the following functionalities:
+
+#### PrivateKey Signer
+
+The `PrivateKeySigner` is the most basic signer and conforms to the multi-signer interface. You can create a random private key or load it from an encrypted backup:
+
+```dart
+// Create a random private key
+final PrivateKeySigner signer = PrivateKeySigner.createRandom("password");
+
+// Load from an encrypted backup
+final PrivateKeySigner signer = PrivateKeySigner.fromJson("source", "password");
+```
+
+#### Passkey Signer
+
+The `PassKeySigner` conforms to the multi-signer interface and allows you to sign payloads using your device's passkeys. It falls under the `secp256r1` category and can be verified on-chain using the `P256Verifier` precompile:
+
+```dart
+final PassKeySigner pkpSigner = PassKeySigner(
+  "variance.space", // Replace with your relying party ID (domain name)
+  "variance", // Replace with your relying party name
+  "https://variance.space", // Replace with your relying party origin
+);
+
+// Register a new passkey
+PassKeyPair pkp = await pkpSigner.register("user@variance.space", "test user");
+```
+
+The PassKeySigner supports various signing methods, including `personalSign`, `signToEc`, and `signToPasskeySignature`.
+
+#### Hardware Signers (Secure Enclave, Keystore)
+
+The `HardwareSigner` conforms to the multi-signer interface and enables your app to generate keypairs inside the security chip of your device (Secure Enclave for iOS, Android Keystore for Android). This allows you to sign payloads with your device's hardware:
+
+```dart
+final HardwareSigner hwdSigner = HardwareSigner.withTag("my app tag");
+
+// Generate a new keypair for the tag (or return an existing one)
+final P256Credential credential = await hwdSigner.generateKeyPair();
+
+// Get an existing public key from the device
+final publicKey = await hwdSigner.getPublicKey(); // Returns a tuple (x, y)
+
+// Check if a public key has been created for the app
+final bool isCreated = await hwdSigner.isKeyCreated();
+```
+
+The `HardwareSigner` provides a high-level abstraction for the `SecureP256` class to conform to the multi-signer interface. However, you can access the `SecureP256` class directly, which supports additional operations like encrypt, decrypt, and verify.
+
+#### EOA Wallet (Seed Phrases)
+
+The `EOAWallet` signer allows you to sign transactions using seed phrases (also known as mnemonics). It conforms to the multi-signer interface and can be used with simple smart accounts and safe accounts.
+Once you have set up the appropriate signer, you can create a `SmartWalletFactory` instance and proceed with creating and interacting with smart wallets.
+
+### Smart Wallet Factory
+
+With the chain configuration and signer set up, you can create a `SmartWalletFactory` instance:
+
+```dart
+final SmartWalletFactory smartWalletFactory = SmartWalletFactory(chain, signer);
+```
+
+### Creating a Smart Wallet
+
+The `SmartWalletFactory` class provides methods to create different types of smart wallets, such as `SimpleAccount`, `P256Account`, and `SafeAccount`. Here's an example of creating a simple smart account:
+
+```dart
+final SmartWallet wallet = await smartWalletFactory.createSimpleAccount(salt);
+print("Simple wallet address: ${wallet.address.hex}");
+```
+
+### Interacting with the Smart Wallet
+
+Once you have a `SmartWallet` instance, you can interact with it using various methods:
+
+#### Retrieve the balance
+
+```dart
+final EtherAmount balance = await wallet.balance;
+print("Account balance: ${balance.getInWei}");
+```
+
+#### Retrieve the account nonce
+
+```dart
+final Uint256 nonce = await wallet.nonce;
+print("Account nonce: ${nonce.toInt()}");
+```
+
+#### Check if the wallet is deployed
+
+```dart
+final bool deployed = await wallet.deployed;
+print("Account deployed: $deployed");
+```
+
+#### Get the init code
+
+```dart
+final String initCode = wallet.initCode;
+print("Account init code: $initCode");
+```
+
+#### Send ether to another account
+
+```dart
+await wallet.send(
+  EthereumAddress.fromHex("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"), // Recipient address
+  EtherAmount.fromInt(EtherUnit.ether, 0.7142), // Amount in ether
+);
+```
+
+::::
