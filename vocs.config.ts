@@ -51,5 +51,258 @@ export default defineConfig({
       text: "Getting Started",
       link: "/getting-started",
     },
+    {
+      text: "Configuration",
+      collapsed: true,
+      items: [
+        {
+          text: "Chains",
+          link: "/config/chains",
+        },
+        {
+          text: "Entrypoint Addresses",
+          link: "/config/entrypoint-address",
+        },
+      ],
+    },
+    {
+      text: "Signers",
+      collapsed: true,
+      items: [
+        {
+          text: "Passkey Signer",
+          link: "/signers/passkey-signer",
+        },
+        {
+          text: "PrivateKey Signer",
+          link: "/signers/privatekey-signer",
+        },
+        {
+          text: "Hardware Signer",
+          link: "/signers/hardware-signer",
+        },
+        {
+          text: "EOA Wallet",
+          link: "/signers/eoawallet",
+        },
+      ],
+    },
+    {
+      text: "Providers",
+      collapsed: true,
+      items: [
+        {
+          text: "RPC service",
+          link: "/providers/service",
+        },
+        {
+          text: "Bundler Provider",
+          link: "/providers/bundler",
+        },
+        {
+          text: "JSON rpc Provider",
+          link: "/providers/jsonrpc",
+        },
+      ],
+    },
+    {
+      text: "UserOperation Models",
+      collapsed: true,
+      items: [
+        {
+          text: "UserOperation",
+          link: "/uop/user-operation",
+        },
+        {
+          text: "UserOperationByHash",
+          link: "/uop/user-operation-by-hash",
+        },
+        {
+          text: "UserOperationGas",
+          link: "/uop/user-operation-gas",
+        },
+        {
+          text: "UserOperationReceipt",
+          link: "/uop/user-operation-receipt",
+        },
+        {
+          text: "UserOperationResponse",
+          link: "/uop/user-operation-response",
+        },
+      ],
+    },
+    {
+      text: "Smart Wallet",
+      collapsed: true,
+      items: [
+        {
+          text: "Smart Wallet",
+          link: "/4337/smart-wallet",
+        },
+        {
+          text: "Accounts",
+          collapsed: true,
+          items: [
+            {
+              text: "P56 Account",
+              link: "/4337/p256-account",
+            },
+            {
+              text: "Simple Account",
+              link: "/4337/simple-account",
+            },
+            {
+              text: "Safe Smart Account",
+              link: "/4337/safe",
+            },
+          ],
+        },
+        {
+          text: "Smart Wallet Factory",
+          link: "/4337/smart-wallet-factory",
+        },
+        {
+          text: "Factories",
+          collapsed: true,
+          items: [
+            {
+              text: "P56 Account Factory",
+              link: "/4337/p256-account-factory",
+            },
+            {
+              text: "Simple Account Factory",
+              link: "/4337/simple-account-factory",
+            },
+            {
+              text: "Safe Smart Account Factory",
+              link: "/4337/safe-factory",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      text: "Plugins & Mixins",
+      collapsed: true,
+      items: [
+        {
+          text: "Plugin Manager Mixin",
+          link: "/plugins/manager",
+        },
+        {
+          text: "Gas Override Mixin",
+          link: "/plugins/gas-overrides",
+        },
+        {
+          text: "Safe 4337 Plugin",
+          link: "/plugins/safe-module",
+        },
+        {
+          text: "Paymaster Plugin",
+          link: "/plugins/paymaster",
+        },
+        {
+          text: "Contract Plugin",
+          link: "/plugins/contract",
+        },
+      ],
+    },
+    {
+      text: "ABI Snippets",
+      link: "/abi-snippets",
+    },
+    {
+      text: "Crypto Utils",
+      collapsed: true,
+      items: [
+        {
+          text: "abi encode/decode",
+          link: "/crypto/abi-encode",
+        },
+        {
+          text: "Uint256",
+          link: "/crypto/uint256",
+        },
+        {
+          text: "Pack Bigints",
+          link: "/packing",
+        },
+        {
+          text: "Hexlify",
+          link: "/crypto/hexlify",
+        },
+        {
+          text: "Keccack256",
+          link: "/crypto/keccack256",
+        },
+        {
+          text: "arrayify",
+          link: "/crypto/arrayify",
+        },
+        {
+          text: "getPublicKeyFromBytes",
+          link: "/crypto/getPublicKeyFromBytes",
+        },
+        {
+          text: "getMessagingSignature",
+          link: "/crypto/getMessagingSignature",
+        },
+        {
+          text: "sha256Hash",
+          link: "/crypto/sha256Hash",
+        },
+        {
+          text: "Base64",
+          link: "/crypto/Base64",
+        },
+        {
+          text: "Hex",
+          link: "/crypto/hex",
+        },
+
+        {
+          text: "Logger",
+          link: "/logger",
+        },
+      ],
+    },
+    {
+      text: "Errors",
+      collapsed: true,
+      items: [
+        {
+          text: "GasEstimationError",
+          link: "/errors/error-gas",
+        },
+        {
+          text: "InvalidBundlerMethod",
+          link: "/errors/error-bundler-method",
+        },
+        {
+          text: "InvalidBundlerUrl",
+          link: "/errors/error-bundler-url",
+        },
+        {
+          text: "InvalidFactoryAddress",
+          link: "/errors/error-factory-address",
+        },
+        {
+          text: "InvalidJsonRpcUrl",
+          link: "/errors/error-jsonrpc-url",
+        },
+        {
+          text: "InvalidPaymasterUrl",
+          link: "/errors/error-paymaster-url",
+        },
+        {
+          text: "NonceError",
+          link: "/errors/error-nonce",
+        },
+        {
+          text: "SendError",
+          link: "/errors/error-send-op",
+        },
+      ],
+    },
   ],
 });
