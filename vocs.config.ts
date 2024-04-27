@@ -53,7 +53,7 @@ export default defineConfig({
     },
     {
       text: "Configuration",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "Chains",
@@ -67,7 +67,7 @@ export default defineConfig({
     },
     {
       text: "Signers",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "Passkey Signer",
@@ -89,7 +89,7 @@ export default defineConfig({
     },
     {
       text: "Providers",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "RPC service",
@@ -107,7 +107,7 @@ export default defineConfig({
     },
     {
       text: "UserOperation Models",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "UserOperation",
@@ -133,7 +133,7 @@ export default defineConfig({
     },
     {
       text: "Smart Wallet",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "Smart Wallet",
@@ -141,7 +141,7 @@ export default defineConfig({
         },
         {
           text: "Accounts",
-          collapsed: true,
+          collapsed: false,
           items: [
             {
               text: "P56 Account",
@@ -163,7 +163,7 @@ export default defineConfig({
         },
         {
           text: "Factories",
-          collapsed: true,
+          collapsed: false,
           items: [
             {
               text: "P56 Account Factory",
@@ -183,7 +183,7 @@ export default defineConfig({
     },
     {
       text: "Plugins & Mixins",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "Plugin Manager Mixin",
@@ -213,7 +213,7 @@ export default defineConfig({
     },
     {
       text: "Crypto Utils",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "abi encode/decode",
@@ -268,7 +268,7 @@ export default defineConfig({
     },
     {
       text: "Errors",
-      collapsed: true,
+      collapsed: false,
       items: [
         {
           text: "GasEstimationError",
