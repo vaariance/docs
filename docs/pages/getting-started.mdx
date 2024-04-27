@@ -107,6 +107,7 @@ final SmartWalletFactory smartWalletFactory = SmartWalletFactory(chain, signer);
 The `SmartWalletFactory` class provides methods to create different types of smart wallets, such as `SimpleAccount`, `P256Account`, and `SafeAccount`. Here's an example of creating a simple smart account:
 
 ```dart
+final salt = Uint256.zero;
 final SmartWallet wallet = await smartWalletFactory.createSimpleAccount(salt);
 print("Simple wallet address: ${wallet.address.hex}");
 ```

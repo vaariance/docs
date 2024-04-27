@@ -1,0 +1,64 @@
+# EntryPoint Address
+
+The `EntryPointAddress` class represents the address of an EntryPoint contract on the configured `Chain`. It encapsulates the version and the Ethereum address of the EntryPoint contract.
+
+### Properties
+
+- `version`: A `double` representing the version of the EntryPoint contract.
+- `address`: An `EthereumAddress` object representing the Ethereum address of the EntryPoint contract.
+
+### Constructors
+
+```dart
+EntryPointAddress(double version, EthereumAddress address)
+```
+
+Creates a new instance of the `EntryPointAddress` class with the given version and address.
+
+### Static Methods
+
+- `EntryPointAddress.v06`: Returns the EntryPoint address for version 0.6 of the EntryPoint contract.
+- `EntryPointAddress.v07`: Returns the EntryPoint address for version 0.7 of the EntryPoint contract.
+
+## Usage
+
+You can use the `EntryPointAddress` class to obtain the address of the EntryPoint contract for a specific version. For example:
+
+```dart
+// Get the EntryPoint address for version 0.6
+final entrypointv06 = EntryPointAddress.v06;
+print(entrypointv06.version); // Output: 0.6
+print(entrypointv06.address); // Output: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+
+// Get the EntryPoint address for version 0.7
+final entrypointv07 = EntryPointAddress.v07;
+print(entrypointv07.version); // Output: 0.7
+print(entrypointv07.address); // Output: 0x0000000071727De22E5E9d8BAf0edAc6f37da032
+```
+
+Alternatively, you can create a new instance of the `EntryPointAddress` class by providing the version and address:
+
+```dart
+final customEntrypoint = EntryPointAddress(
+  8.0,
+  EthereumAddress.fromHex('0x...version..8.0'),
+);
+print(customEntrypoint.version); // Output: 8.0
+print(customEntrypoint.address); // Output: '0x...version..8.0'
+```
+
+The `EntryPointAddress` class is useful when you need to interact with different versions of the EntryPoint contract or when you want to specify a custom EntryPoint address. By default, the `Chain` class is configured with the EntryPoint addresses for version 0.6 or 0.7, depending on the network you're using. However, if you need to use a custom EntryPoint address, you can easily set it on the `Chain` instance.
+
+```dart
+final chain = Chains.getChain(Network.ethereum);
+
+// Set the custom EntryPoint address on the chain
+chain.entrypoint = customEntrypoint;
+```
+
+After setting the custom EntryPoint address, any interactions with the blockchain through the `Chain` instance will use the specified custom EntryPoint contract address.
+This feature can be useful in various scenarios, such as:
+
+1. Testing with a locally deployed EntryPoint contract during development.
+2. Using a custom or forked version of the EntryPoint contract.
+3. Migrating to a newer version of the EntryPoint contract that is not yet included in the predefined configurations.

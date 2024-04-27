@@ -100,7 +100,7 @@ export default defineConfig({
           link: "/providers/bundler",
         },
         {
-          text: "JSON rpc Provider",
+          text: "JSON RPC Provider",
           link: "/providers/jsonrpc",
         },
       ],
@@ -212,7 +212,7 @@ export default defineConfig({
       link: "/abi-snippets",
     },
     {
-      text: "Crypto Utils",
+      text: "Crypto & Utils",
       collapsed: false,
       items: [
         {
