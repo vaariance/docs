@@ -2,7 +2,10 @@ import { defineConfig } from "vocs";
 
 export default defineConfig({
   theme: {
-    accentColor: "#D9D9D9",
+    accentColor: {
+      light: "#FF6F61",
+      dark: "#87CEEB",
+    },
   },
   baseUrl: "https://docs.variance.space",
   font: {
