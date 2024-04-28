@@ -85,6 +85,16 @@ export default defineConfig({
           text: "EOA Wallet",
           link: "/signers/eoawallet",
         },
+        {
+          text: "Models",
+          collapsed: true,
+          items: [
+            {
+              text: "Multi Signer Interface",
+              link: "/signers/models/msi",
+            },
+          ],
+        },
       ],
     },
     {

@@ -52,3 +52,16 @@ import 'package:variance_dart/variance_dart.dart';
 final entrypointv06Address = Constants.entrypointv06;
 final simpleAccountFactoryAddressv07 = Constants.simpleAccountFactoryAddressv07;
 ```
+
+## Usage
+
+```dart
+final mainnetChain = Chains.getChain(Network.ethereum); // [!code focus]
+
+final walletFactory = SmartWalletFactory(mainnetChain, signer);
+
+final salt = Uint256.zero;
+final wallet = await walletFactory.createSimpleAccount(salt);
+
+print("wallet created ${wallet.address.hex} ");
+```

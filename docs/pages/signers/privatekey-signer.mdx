@@ -1,0 +1,61 @@
+# PrivateKey Signer
+
+The `PrivateKeySigner` class implements the `MSI` and represents a signer that uses a private key to sign payloads. It is the most basic signer.
+
+## Creating a PrivateKeySigner
+
+You can create a `PrivateKeySigner` instance using one of the following methods:
+
+1. **From an Existing EthPrivateKey**
+
+```dart
+import 'package:web3dart/web3dart.dart';
+
+final ethPrivateKey = EthPrivateKey.fromHex('your_private_key_hex');
+final password = 'your_password';
+final random = Random.secure();
+final privateKeySigner = PrivateKeySigner.create(ethPrivateKey, password, random);
+```
+
+2. **With a Randomly Generated EthPrivateKey**
+
+```dart
+final password = 'your_password';
+final privateKeySigner = PrivateKeySigner.createRandom(password);
+```
+
+3. **From a JSON Representation**
+
+```dart
+final sourceJson = '{...your_private_key_encrypted...}';
+final password = 'your_password';
+final privateKeySigner = PrivateKeySigner.fromJson(sourceJson, password);
+```
+
+### Properties
+
+- `address`: Returns the Ethereum address associated with the `PrivateKeySigner`.
+- `publicKey`: Returns the public key associated with the `PrivateKeySigner`.
+
+### Methods
+
+- `getAddress`: Returns the Ethereum address as a hexadecimal string.
+- `personalSign`: Signs the provided hash using the private key and returns the signature as a `Uint8List`.
+- `signToEc`: Signs the provided hash using the private key and returns an instance of `MsgSignature` containing the `r`, `s`, and `v` values of the signature.
+- `toJson()`: Returns the JSON representation of the `PrivateKeySigner`.
+
+### Usage
+
+```dart
+// Create a PrivateKeySigner instance
+final privateKeySigner = PrivateKeySigner.createRandom('your_password');
+
+// Get the Ethereum address
+final address = privateKeySigner.address;
+print('Address: $address');
+
+// Sign a payload
+final payload = Uint8List.fromList([0x12, 0x34, 0x56, 0x78]);
+final signature = await privateKeySigner.personalSign(payload);
+print('Signature: $signature');
+```

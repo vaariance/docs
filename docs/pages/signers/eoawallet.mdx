@@ -1,0 +1,89 @@
+# EOAWallet as Signer
+
+The `EOAWallet` class is an implementation of the `MSI` that provides functionality to create, recover, and manage Externally Owned Accounts (EOAs) using mnemonic phrases. It can be used as signer with smart accounts and safe's.
+
+Beyond `EIP-1271` messages, EOAWallet as a signer can be relied upon for developing fully featured EOA Wallets like Metamask; Which will require using the `EthPrivateKey` directly instead of the `MSI` interface.
+
+::::steps
+
+## Creating a New EOA Wallet instance
+
+To create a new EOA wallet signer instance, you can use the createWallet factory method:
+
+```dart
+final walletSigner = EOAWallet.createWallet(); // Defaults to 12 words
+
+// Create a 24-word phrase wallet
+final walletSigner24 = EOAWallet.createWallet(WordLength.word_24);
+```
+
+The `createWallet` method generates a random mnemonic phrase of the specified word length (default is 12 words) and returns an `EOAWallet` instance. The mnemonic phrase is generated using the `Bip39MnemonicGenerator`, which follows the **BIP-39** standard for generating mnemonic phrases.
+
+### WordLength
+
+The `WordLength` enum represents the available word lengths for generating mnemonic phrases:
+
+- `WordLength.word_12`: Represents a 12-word mnemonic phrase.
+- `WordLength.word_24`: Represents a 24-word mnemonic phrase.
+
+The `WordLength` enum when used as a parameter in the `createWallet` method can specify the desired word length when generating a new mnemonic phrase.
+
+## Recovering an EOA Wallet
+
+To recover an EOA wallet signer instance from an existing mnemonic phrase, you can use the `recoverAccount` factory method:
+
+```dart
+final mnemonicPhrase = 'test test test test test test test test test test test junk'; // Replace with an actual mnemonic phrase
+final recoveredSigner = EOAWallet.recoverAccount(mnemonicPhrase);
+```
+
+## Adding an Account
+
+You can add a new account to the EOA wallet using the `addAccount` method:
+
+```dart
+final newAddress = walletSigner.addAccount(0); // Adds account at index 0
+```
+
+The `addAccount` method takes an index as input and returns the `EthereumAddress` of the account at that index. Internally, it derives a BIP-44 private key, which takes a seed and index as input and generates a private key using the BIP-44 derivation path `"m/44'/60'/0'/0/index"`. The derived private key is then used to create an `EthPrivateKey` instance, and the corresponding Ethereum address is returned.
+
+## Exporting Mnemonic and Private Key
+
+You can export the mnemonic phrase and private key of an account using the following methods:
+
+```dart
+final mnemonic = walletSigner.exportMnemonic();
+final privateKey = walletSigner.exportPrivateKey(0); // Exports private key of account at index 0
+```
+
+## Signing Methods
+
+The EOAWallet class provides two methods for signing payloads:
+
+### Using personalSign
+
+The `personalSign` method signs the provided hash using the private key of the specified account and returns the signature as a `Uint8List`.
+
+```dart
+final hash = Uint8List.fromList([0x12, 0x34, 0x56, 0x78]);
+final signature = await walletSigner.personalSign(hash, index: 0); // Signs using account at index 0
+```
+
+Internally, it retrieves the private key and calls the `signPersonalMessageToUint8List` method of the `EthPrivateKey` class to sign the hash.
+
+### Using signToEc
+
+The `signToEc` method signs the provided hash using the private key of the specified account and returns an instance of `MsgSignature` containing the `r`, `s`, and `v` values of the signature.
+
+```dart
+final hash = Uint8List.fromList([0x12, 0x34, 0x56, 0x78]);
+final signature = await walletSigner.signToEc(hash, index: 0); // Signs using account at index 0
+```
+
+Internally, it retrieves the private key and calls the `signToEcSignature` method of the `EthPrivateKey` class to sign the hash and obtain the `MsgSignature` instance.
+
+:::tip
+The `SmartWallet` class internally handles the signing process for any specific signer corresponding to the `MSI`.
+:::
+
+::::

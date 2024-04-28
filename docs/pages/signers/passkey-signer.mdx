@@ -1,0 +1,150 @@
+# PassKey Signers
+
+Passkeys signers are one of the available signers available in the [web3_signers](https://pub.dev/packages/web3_signers) package, and is built on top of the [passkeys](https://pub.dev/packages/passkeys) library from [corbado](https://www.corbado.com/passkeys). Only signers that conform to the multi-signer-interface (`MSI`) can be used with variance.
+
+```dart
+import 'package:web3_signers/web3_signers.dart';
+```
+
+Passkey signers conform to the `MSI` and allow you to sign payloads using your device's passkeys. They fall under the `secp256r1` category and can be verified on-chain using a P256 Verifier.
+
+## Creating a Passkey Signer
+
+To create a Passkey signer, you need to provide the following information:
+
+1. `namespace`: The relying party ID (domain name), e.g., `"variance.space"`.
+2. `name`: The relying party name, e.g., `"variance"`.
+3. `origin`: The relying party origin, e.g., `"https://variance.space"`.
+
+You can optionally provide:
+
+4. `crossOrigin`: A boolean indicating whether the relying party entity is cross-origin (defaults to false).
+5. `knownCredentials`: A set of known credential IDs (defaults to an empty set).
+
+```dart
+final PassKeySigner pkpSigner = PassKeySigner(
+  "variance.space", // Replace with your relying party ID (domain name)
+  "variance", // Replace with your relying party name
+  "https://variance.space", // Replace with your relying party origin
+);
+```
+
+## Registering a New Passkey
+
+To register a new passkey, you can use the `register` method:
+
+```dart
+PassKeyPair pkp = await pkpSigner.register("user@variance.space", "test user"); // [!code focus]
+// Username is required, display name is optional
+```
+
+This returns a `PassKeyPair` object that contains the following information:
+
+- `credentialHex`: The credential ID in hexadecimal format.
+- `publicKey`: A tuple containing the x and y coordinates of the public key as `Uint256` instances.
+- `name`: The display name of the registered user.
+- `aaGUID`: The Authenticator Attestation GUID.
+- `registrationTime`: The timestamp of when the passkey was registered.
+
+The `PassKeyPair` class provides methods to convert its instance to and from JSON format:
+
+- `PassKeyPair.fromJson(String source)`: Constructs a `PassKeyPair` instance from a JSON string.
+- `toJson()`: Returns a JSON string representation of the `PassKeyPair` instance.
+
+### Known Credentials
+
+If you already know the credential IDs created for the user, you can pass the `knownCredentials` when creating the Passkey signer:
+
+```dart
+final PassKeySigner pkpSigner = PassKeySigner(
+  "variance.space", // Replace with your relying party ID (domain name)
+  "variance", // Replace with your relying party name
+  "https://variance.space", // Replace with your relying party origin
+  knownCredentials: {"0xcredentialId1", "0xcredentialId2", "0xcredentialId3"} // [!code focus]
+);
+```
+
+This enables the authenticator to filter the passkeys presented to the user for signing operations.
+
+### Credential ID
+
+To conform to bytes32, all credential IDs are Hex-encoded to emulate the `getAddress()` function of the `MSI`. This makes the credential ID act as the public address for a Passkey signer.
+
+Credential IDs are always converted to Hex before being returned.
+
+You can convert a credential ID to and from Hex format using the following methods:
+
+```dart
+final credentialHex = "0xbf34ed6a...32 bytes in length";
+final Uint8List fromHex = pkpSigner.hexToCredentialId(credentialHex); // [!code focus]
+final String toHex = pkpSigner.credentialIdToHex(fromHex); // [!code focus]
+
+final id = Base64Url.encode(fromHex); // Base64 version of the credential ID
+```
+
+## Signing with Passkeys
+
+There are three methods for signing a payload using the Passkey signer:
+
+::::steps
+
+### Using `personalSign`
+
+`personalSign` returns a `Uint8List` which is an encoded representation of the `PassKeySignature` object needed on-chain. To extract individual values, you need to `abi.decode()` it. The signed challenge is excluded from this object, and it is assumed that your relying party is aware of this challenge, which should be `Base64Url` encoded.
+
+```dart
+final sig = await pkpSigner.personalSign(Uint8List(32));
+```
+
+### Using `signToEc`
+
+Similar to `personalSign`, `signToEc` conforms to the `MSI` and returns an instance of `MsgSignature` containing the `r`, `s`, and `v` values of the signature. Effectively, `v` is 0.
+
+```dart
+final sig = await pkpSigner.signToEc(Uint8List(32));
+```
+
+### Using `signToPasskeySignature`
+
+This method is not part of the `MSI` but is called internally by `personalSign` and `signToEc`, and it returns the raw `PassKeySignature` object.
+
+```dart
+final sig = await pkpSigner.signToPasskeySignature(Uint8List(32));
+```
+
+> For each of the above methods, you can pass an index if you have knownCredentials. This prompts the authenticator to sign specifically with a particular credential. For example:
+
+> ```dart
+> await pkpSigner.signToPasskeySignature(Uint8List(32), 2); // Signing with knownCredential at index 2
+> ```
+
+#### PassKey Signature
+
+The `PassKeySignature` class represents the signature generated by signing a payload with a passkey. It has the following properties:
+
+1. `credentialHex`: The credential ID in hexadecimal format.
+2. `signature`: A tuple containing the `r` and `s` values of the signature as `Uint256` instances.
+3. `authData`: The authenticator data as a `Uint8List`.
+4. `clientDataPrefix`: The prefix of the client data JSON string.
+5. `clientDataSuffix`: The suffix of the client data JSON string.
+6. `userId`: The user ID (not decodable).
+
+The `PassKeySignature` class also provides a method to convert its instance to a `Uint8List` using ABI encoding:
+
+7. `toUint8List()`: Returns the ABI-encoded representation of the `PassKeySignature` instance as a `Uint8List`.
+
+::::
+
+## Usage
+
+```dart
+final pkpSigner = PassKeySigner("webauthn.io", "webauthn", "https://webauthn.io"); // [!code focus]
+
+final walletFactory = SmartWalletFactory(chain, pkpSigner);
+final keypair = await pkpSigner.register(username, displayName);
+
+final salt = Uint256.zero;
+final wallet = await walletFactory.createP256Account<PassKeyPair>(keypair, salt);
+
+print("wallet created ${wallet.address.hex} ");
+```

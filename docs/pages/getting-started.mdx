@@ -55,7 +55,7 @@ final PrivateKeySigner signer = PrivateKeySigner.fromJson("source", "password");
 
 #### Passkey Signer
 
-The `PassKeySigner` conforms to the multi-signer interface and allows you to sign payloads using your device's passkeys. It falls under the `secp256r1` category and can be verified on-chain using the `P256Verifier` precompile:
+The `PassKeySigner` conforms to the multi-signer interface and allows you to sign payloads using your device's passkeys. It falls under the `secp256r1` category and can be verified on-chain using a `P256 Verifier` on-chain:
 
 ```dart
 final PassKeySigner pkpSigner = PassKeySigner(
@@ -86,8 +86,6 @@ final publicKey = await hwdSigner.getPublicKey(); // Returns a tuple (x, y)
 // Check if a public key has been created for the app
 final bool isCreated = await hwdSigner.isKeyCreated();
 ```
-
-The `HardwareSigner` provides a high-level abstraction for the `SecureP256` class to conform to the multi-signer interface. However, you can access the `SecureP256` class directly, which supports additional operations like encrypt, decrypt, and verify.
 
 #### EOA Wallet (Seed Phrases)
 
@@ -148,7 +146,7 @@ print("Account init code: $initCode");
 
 ```dart
 await wallet.send(
-  EthereumAddress.fromHex("0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"), // Recipient address
+  EthereumAddress.fromHex("0x5bb137D4b0FDCD49DcA30c7CF57E578a026d2789"), // Recipient address
   EtherAmount.fromInt(EtherUnit.ether, 0.7142), // Amount in ether
 );
 ```

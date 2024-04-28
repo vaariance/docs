@@ -1,0 +1,114 @@
+# Multi Signer Interface (MSI)
+
+The `MultiSignerInterface` is an abstract class that defines a common interface for multi-signers, allowing for signing of data and returning the result. It provides a uniform interface for accessing signer addresses and signing messages in the Ethereum context. This interface allows for flexibility in creating different implementations of multi-signers while adhering to a common structure.
+
+## Implementations
+
+The `MultiSignerInterface` is implemented by the following classes:
+
+- `PrivateKeySigner`: A signer that uses a private key to sign payloads.
+- `PassKeySigner`: A signer that uses a passkey to sign payloads.
+- `EOAWallet`: A signer that represents an Externally Owned Account (EOA) wallet.
+- `HardwareSigner`: A signer that uses hardware-based security features (e.g., Secure Enclave, Android Keystore) to sign payloads.
+
+## Properties
+
+- `dummySignature`: A valid signature that can be used for testing purposes, specifically to simulate user operations on the entrypoint. Implementations must specify a dummy signature that matches their transaction signature standard.
+
+## Methods
+
+1. **getAddress**
+
+```dart
+String getAddress({int? index});
+```
+
+Generates an Ethereum address of the signer.
+
+### Parameters:
+
+- `index` (optional): An optional index to pass to the function. For HD wallets, this can be used to specify the account index.
+
+Example:
+
+```dart
+final address = getAddress();
+
+// Assuming the signer is an HD wallet
+final address = getAddress(3); // Gets the address for the account derived at position 3
+```
+
+2. **personalSign**
+
+```dart
+Future<Uint8List> personalSign(Uint8List hash, {int? index});
+```
+
+Signs the provided `hash` using the personal sign method.
+
+### Parameters:
+
+- `hash`: The hash to be signed.
+- `index` (optional): An optional value to pass to the function. For HD wallets, this can be used to specify the account index.
+
+Example:
+
+```dart
+final hash = Uint8List.fromList([0x01, 0x02, 0x03, 0x04]);
+final signature = await personalSign(hash); // Assuming no data is required for actual signing
+
+// Assuming the signer is an HD wallet
+final signature = await personalSign(hash, 0); // Signs using the account at index 0
+```
+
+3. **signToEc**
+
+```dart
+Future<MsgSignature> signToEc(Uint8List hash, {int? index});
+```
+
+Signs the provided `hash` using elliptic curve (EC) signatures and returns the `r` and `s` values.
+Parameters:
+
+- `hash`: The hash to be signed.
+- `index` (optional): An optional value to pass to the function. For HD wallets, this can be used to specify the account index.
+
+Example:
+
+```dart
+final hash = Uint8List.fromList([0x01, 0x02, 0x03, 0x04]);
+final signature = await signToEc(hash);
+
+// Assuming the signer is an HD wallet
+final signature = await signToEc(hash, 0); // Signs using the account at index 0
+```
+
+## Usage
+
+To use the `MSI`, you can create a class that extends it and implements the required methods. This allows you to define custom signer implementations that adhere to the common interface.
+
+```dart
+class CustomSigner extends MultiSignerInterface {
+  @override
+  String dummySignature = "0x...";
+
+  @override
+  String getAddress({int? index}) {
+    // Implementation for generating the signer's address
+  }
+
+  @override
+  Future<Uint8List> personalSign(Uint8List hash, {int? index}) async {
+    // Implementation for personal sign
+  }
+
+  @override
+  Future<MsgSignature> signToEc(Uint8List hash, {int? index}) async {
+    // Implementation for signing using elliptic curve signatures
+  }
+}
+```
+
+By implementing the `MultiSignerInterface`, you ensure that your custom signer follows the common interface and can be used interchangeably with other signers that also implement this interface.
+
+The `MultiSignerInterface` provides a standardized way to interact with different types of signers, including hardware-based signers like the `HardwareSigner`, making it easier to work with various signing mechanisms in the Ethereum ecosystem.
