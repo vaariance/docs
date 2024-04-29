@@ -1,0 +1,117 @@
+# Interacting with a Node
+
+The `JsonRPCProvider` provides a minimal JSON-RPC interface for interacting with supported EVM networks, specifically for smart account-related cases. It allows you to estimate gas costs, retrieve block information, and get gas prices.
+
+If you require the full features of a JSON-RPC client, you can use the `Web3Client` class from the `web3dart` package instead.
+
+## Setting up the JsonRPCProvider
+
+To start using the `JsonRPCProvider`, you need to create an instance of it by providing the necessary chain configuration. Here's an example:
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+
+final chain = Chains.getChain(Network.ethereum);
+final jsonRpcProvider = JsonRPCProvider(chain); // [!code focus]
+```
+
+### Properties
+
+The `JsonRPCProvider` class has the following property:
+
+- `rpc`: The remote procedure call (RPC) client used to communicate with the blockchain. It is an instance of `RPCBase`.
+
+## Methods
+
+### estimateGas
+
+The `estimateGas` method allows you to estimate the gas cost for a transaction before sending it. Here's an example:
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+
+final recipient = '0x1234567890123456789012345678901234567890';
+final amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, 1);
+
+try {
+  final gasEstimate = await jsonRpcProvider.estimateGas(smartAccountAddress, Contract.execute(smartAccountAddress, to: recipient, amount: amount)); // [!code focus]
+  print('Estimated gas cost: $gasEstimate');
+} catch (e) {
+  print('Error estimating gas cost: $e');
+}
+```
+
+:::tip[How To get the smartAccount address?]
+The `smartAccountAddress` can be gotten from an instance of `SmartWallet`.
+:::
+
+### getBlockNumber
+
+The `getBlockNumber` method allows you to retrieve the current block number of the EVM network coresponding to the configured chain. Here's an example:
+
+```dart
+try {
+  final blockNumber = await jsonRpcProvider.getBlockNumber(); // [!code focus]
+  print('Current block number: $blockNumber');
+} catch (e) {
+  print('Error retrieving block number: $e');
+}
+```
+
+### getBlockInformation
+
+The `getBlockInformation` method allows you to retrieve information about a specific block. Here's an example:
+
+```dart
+try {
+  final blockInfo = await jsonRpcProvider.getBlockInformation(blockNumber: 'latest', isContainFullObj: true); // [!code focus]
+  print('Block information: $blockInfo');
+} catch (e) {
+  print('Error retrieving block information: $e');
+}
+```
+
+In this example, we call the `getBlockInformation` method, specifying the block number (in this case, 'latest') and whether to include full transaction objects (`isContainFullObj`).
+
+### getEip1559GasPrice
+
+The `getEip1559GasPrice` method allows you to retrieve the gas prices according to the EIP-1559 specification. Here's an example:
+
+```dart
+try {
+  final gasPrices = await jsonRpcProvider.getEip1559GasPrice(); // [!code focus]
+  print('Max fee per gas: ${gasPrices['maxFeePerGas']}');
+  print('Max priority fee per gas: ${gasPrices['maxPriorityFeePerGas']}');
+} catch (e) {
+  print('Error retrieving gas prices: $e');
+}
+```
+
+### getGasPrice
+
+The `getGasPrice` method allows you to retrieve the current gas prices. It tries to retrieve the gas prices according to the EIP-1559 specification first, and if that fails, it falls back to retrieving the legacy gas price. Here's an example:
+
+```dart
+try {
+  final gasPrices = await jsonRpcProvider.getGasPrice(); // [!code focus]
+  print('Max fee per gas: ${gasPrices['maxFeePerGas']}');
+  print('Max priority fee per gas: ${gasPrices['maxPriorityFeePerGas']}');
+} catch (e) {
+  print('Error retrieving gas prices: $e');
+}
+```
+
+### getLegacyGasPrice
+
+The `getLegacyGasPrice` method allows you to retrieve the legacy gas price. Here's an example:
+
+```dart
+try {
+  final legacyGasPrice = await jsonRpcProvider.getLegacyGasPrice(); // [!code focus]
+  print('Legacy gas price: $legacyGasPrice');
+} catch (e) {
+  print('Error retrieving legacy gas price: $e');
+}
+```
+
+If you require the full features of a JSON-RPC client, you can consider using the `Web3Client` class from the `web3dart` package instead which contains all the methods of the `eth_rpc`.

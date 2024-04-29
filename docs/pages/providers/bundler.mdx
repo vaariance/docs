@@ -1,0 +1,145 @@
+# Interacting with a Bundler
+
+The `BundlerProvider` provides a convenient way to interact with a bundler for sending and tracking user operations on any supported EVM network.
+
+## Setting up the BundlerProvider
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+
+final chain = Chains.getChain(Network.ethereum);
+
+final bundlerProvider = BundlerProvider(chain); // [!code focus]
+```
+
+### Properties
+
+The `BundlerProvider` has the following properties:
+
+- `rpc`: The remote procedure call (RPC) client used to communicate with the bundler. It is an instance of the `RPCBase` class.
+
+## Methods
+
+### estimateUserOperationGas
+
+The `estimateUserOperationGas` method allows you to estimate the gas cost for a user operation before sending it to the bundler. Here's an example:
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+import 'package:web3dart/web3dart.dart';
+
+// example transfering Eth to another recipient
+final entrypoint = EntryPointAddress.v06;
+
+final recipient = '0x1234567890123456789012345678901234567890';
+final amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, 1);
+
+final userOp = UserOperation.partial(callData: Contract.execute(smartAccountAddress,
+              to: recipient, amount: amount))
+
+try {
+  final gasEstimate = await bundlerProvider.estimateUserOperationGas(userOp, entrypoint); // [!code focus]
+  print('Estimated gas cost: ${gasEstimate.callGasLimit}');
+} catch (e) {
+  print('Error estimating gas cost: $e');
+}
+```
+
+### getUserOperationByHash
+
+The `getUserOperationByHash` method allows you to retrieve a user operation by its hash. Here's an example:
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+import 'package:web3dart/web3dart.dart';
+
+// example transfering Eth to another recipient
+final entrypoint = EntryPointAddress.v06;
+
+final recipient = '0x1234567890123456789012345678901234567890';
+final amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, 1);
+
+final userOp = UserOperation.partial(callData: Contract.execute(smartAccountAddress,
+              to: recipient, amount: amount))
+final userOpHash = userOp.hash(chain); // chain is an instance of the Chain class
+// the hash operation requires some chain parameters to calculate the hash
+
+try {
+  final userOp = await bundlerProvider.getUserOperationByHash(userOpHash); // [!code focus]
+  print('User operation: $userOp');
+} catch (e) {
+  print('Error retrieving user operation: $e');
+}
+```
+
+### getUserOpReceipt
+
+The `getUserOpReceipt` method allows you to retrieve the receipt of a user operation by its hash. Here's an example:
+
+```dart
+import 'package:variance_dart/variance_dart.dart';
+import 'package:web3dart/web3dart.dart';
+
+// example transfering Eth to another recipient
+final entrypoint = EntryPointAddress.v06;
+
+final recipient = '0x1234567890123456789012345678901234567890';
+final amount = EtherAmount.fromUnitAndValue(EtherUnit.wei, 1);
+
+final userOp = UserOperation.partial(callData: Contract.execute(smartAccountAddress,
+              to: recipient, amount: amount))
+final userOpHash = userOp.hash(chain);
+
+try {
+  final receipt = await bundlerProvider.getUserOpReceipt(userOpHash); // [!code focus]
+  print('User operation receipt: $receipt');
+} catch (e) {
+  print('Error retrieving user operation receipt: $e');
+}
+```
+
+### sendUserOperation
+
+The `sendUserOperation` method allows you to send a user operation to the bundler. Here's an example:
+
+```dart
+// after estimating UserOperation gas and updating the userOp object
+
+try {
+  final response = await bundlerProvider.sendUserOperation(userOp, entrypoint); // [!code focus]
+  print('User operation hash: ${response.userOpHash}');
+
+  // Wait for the user operation receipt
+  final receipt = await response.wait();
+  print('User operation receipt: $receipt');
+} catch (e) {
+  print('Error sending user operation: $e');
+}
+```
+
+### supportedEntryPoints
+
+The `supportedEntryPoints` method allows you to retrieve the list of supported entry points from the bundler. Here's an example:
+
+```dart
+try {
+  final entryPoints = await bundlerProvider.supportedEntryPoints();
+  print('Supported entry points: $entryPoints');
+} catch (e) {
+  print('Error retrieving supported entry points: $e');
+}
+```
+
+These are high level abstraction over these methods: `eth_estimateUserOperationGas`, `eth_getUserOperationByHash`, `eth_getUserOperationReceipt`, `eth_sendUserOperation`, `eth_supportedEntryPoints` and uses an instance of the `RPCBase` class to communicate with the bundler.
+The `RPCBase` class provides a simple and consistent interface for making RPC requests and handling responses allowing you to implement custom methods like bundler specific methods. e.g `pimlico_getUserOperationGas`
+
+```dart
+final RPCBase rpc = RPCBase(bundlerUrl);
+
+Future<Map<String, dynamic>> getPimlicoBundlerOpGas(
+      Map<String, dynamic> userOp, EntryPointAddress entrypoint) async {
+    final res = await rpc.send<Map<String, dynamic>>(
+        'pimlico_getUserOperationGas', [userOp, entrypoint.address.hex]);
+    return res;
+}
+```

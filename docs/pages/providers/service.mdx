@@ -1,0 +1,57 @@
+# Providers
+
+Providers are responsible for interacting with Ethereum nodes and bundlers. They enable sending raw RPC calls and facilitate communication between a flutter app and the Ethereum network. Three main providers: Base RPC, Bundler Provider, and JSONRPC Provider are included.
+
+## Base RPC Service
+
+The RPC Service is the foundation that the `Bundler` Provider and `JSONRPC` Provider use to send raw `RPC` calls to Ethereum nodes. It provides a simple and consistent interface for making RPC requests and handling responses.
+
+The Base RPC extends the `JsonRPC` class and serves as the base class for `RPC` communication. It takes a URL as a parameter, which represents the endpoint of the Ethereum node or bundler to interact with.
+
+### Constructor
+
+```dart
+RPCBase(String url)
+```
+
+Creates a new instance of the `RPCBase` class with the specified URL.
+
+### Methods
+
+1. **send**
+
+```dart
+Future<T> send<T>(String function, [List<dynamic>? params])
+```
+
+Asynchronously sends an RPC call to the Ethereum node for the specified function and parameters.
+
+#### Parameters:
+
+- `function`: The Ethereum RPC function to call (e.g., `eth_getBalance`).
+- `params`: Optional parameters for the RPC call.
+
+### Returns:
+
+A `Future` that completes with the result of the RPC call.
+
+Example:
+
+```dart
+var result = await send<String>('eth_getBalance', ['0x9876543210abcdef9876543210abcdef98765432']);
+```
+
+## Usage
+
+To use the RPC Service, you need to create an instance of the `RPCBase` class with the desired URL:
+
+```dart
+final rpcService = RPCBase('https://mainnet.infura.io/v3/your-api-key');
+```
+
+Once you have an instance of the RPC Service, you can make RPC calls using the `send` method:
+
+```dart
+final balance = await rpcService.send<String>('eth_getBalance', ['0x9876543210abcdef9876543210abcdef98765432']);
+print('Account balance: $balance');
+```
