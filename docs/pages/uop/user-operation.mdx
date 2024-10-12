@@ -1,0 +1,68 @@
+# User Operation
+
+The `UserOperation` object is a lightweight implementation of a transaction builder that allows you to easily create and sign a user operation. It represents an EIP4337 UserOperation in the context of account abstraction.
+
+## Properties
+
+- `sender`: The Ethereum address of the sender.
+- `nonce`: The nonce value as a `BigInt`.
+- `initCode`: The initialization code as a `Uint8List`.
+- `callData`: The call data as a `Uint8List`.
+- `callGasLimit`: The call gas limit as a `BigInt`.
+- `verificationGasLimit`: The verification gas limit as a `BigInt`.
+- `preVerificationGas`: The pre-verification gas as a `BigInt`.
+- `maxFeePerGas`: The maximum fee per gas as a `BigInt`.
+- `maxPriorityFeePerGas`: The maximum priority fee per gas as a `BigInt`.
+- `signature`: The signature as a `String`.
+- `paymasterAndData`: The paymaster and data as a `Uint8List`.
+
+## Creating a UserOperation
+
+To create a new `UserOperation` instance, you can use the constructor or one of the factory methods.
+
+::::steps
+
+### Using the Constructor
+
+```dart
+var userOperation = UserOperation(
+  sender: EthereumAddress.fromHex('0x1234567890123456789012345678901234567890'),
+  nonce: BigInt.from(1),
+  initCode: Uint8List.fromList([...]),
+  callData: Uint8List.fromList([...]),
+  callGasLimit: BigInt.from(100000),
+  verificationGasLimit: BigInt.from(50000),
+  preVerificationGas: BigInt.from(10000),
+  maxFeePerGas: BigInt.from(1000000000),
+  maxPriorityFeePerGas: BigInt.from(1000000000),
+  signature: '0x1234567890',
+  paymasterAndData: Uint8List.fromList([...]),
+);
+```
+
+### Creating a UserOperation from a JSON String
+
+```dart
+var jsonString = '{"sender": "0x1234567890123456789012345678901234567890", ...}';
+var userOp = UserOperation.fromJson(jsonString);
+```
+
+### Creating a UserOperation from a JSON Map
+
+```dart
+var map = {
+  'sender': '0x1234567890123456789012345678901234567890',
+  'nonce': '1',
+  ...
+};
+var userOp = UserOperation.fromMap(map);
+```
+
+### Create a Partial UserOperation
+
+This creates a pre-filled user operation that can be used for gas estimation but does not include a value in the `signature` and `paymasterAndData` fields.
+It requires the `callData` fields to be set
+
+```dart
+
+```

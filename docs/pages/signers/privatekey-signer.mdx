@@ -15,6 +15,10 @@ final ethPrivateKey = EthPrivateKey.fromHex('your_private_key_hex');
 final password = 'your_password';
 final random = Random.secure();
 final privateKeySigner = PrivateKeySigner.create(ethPrivateKey, password, random);
+
+// Create a signer for AlchemyLightAccount
+final prefix = const SignatureOptions(prefix: [0]);
+final privateKeySigner = PrivateKeySigner.create(ethPrivateKey, password, random, prefix);
 ```
 
 2. **With a Randomly Generated EthPrivateKey**
@@ -22,6 +26,9 @@ final privateKeySigner = PrivateKeySigner.create(ethPrivateKey, password, random
 ```dart
 final password = 'your_password';
 final privateKeySigner = PrivateKeySigner.createRandom(password);
+
+// Create a signer for AlchemyLightAccount
+final privateKeySigner = PrivateKeySigner.createRandom(password, prefix);
 ```
 
 3. **From a JSON Representation**
@@ -30,6 +37,9 @@ final privateKeySigner = PrivateKeySigner.createRandom(password);
 final sourceJson = '{...your_private_key_encrypted...}';
 final password = 'your_password';
 final privateKeySigner = PrivateKeySigner.fromJson(sourceJson, password);
+
+// Create a signer for AlchemyLightAccount
+final privateKeySigner = PrivateKeySigner.fromJson(sourceJson, password, prefix);
 ```
 
 ### Properties

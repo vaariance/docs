@@ -1,6 +1,6 @@
 # Get started
 
-The Variance SDK is a powerful Dart package that simplifies interaction with Ethereum-based blockchains. In this guide, we'll walk through the steps to set up and start using the SDK in your project.
+Variance is an Account Abstraction Developer toolkit that is designed to simplify the development of Ethereum smart accounts and Entrypoint interactions. It relies on the [Web3dart](https://pub.dev/packages/web3dart) library.
 
 ::::steps
 
@@ -11,31 +11,30 @@ To use the Variance SDK in your Flutter project, open your terminal and run the 
 ```bash
 flutter pub add variance_dart
 flutter pub add web3_signers
-
-# optionally
 flutter pub add web3dart
 ```
 
 ### Chain Configuration
 
-First, import the necessary classes and configure the blockchain network you want to work with:
+First, import the necessary classes and configure the EVM network you want to work with:
 
 ```dart
-import 'package:variance_dart/variance_dart.dart';
 import 'package:web3_signers/web3_signers.dart';
+import 'package:variance_dart/variance_dart.dart';
 import 'package:web3dart/web3dart.dart';
 
 // Configure the chain
-const String rpcUrl = 'http://localhost:8545';
-const String bundlerUrl = 'http://localhost:3000/rpc';
-const Uint256 salt = const Uint256.zero;
+static const rpc = "https://api.pimlico.io/v2/84532/rpc?apikey=API_KEY";
+final Uint256 salt = Uint256.zero;
 
-final Chain chain = Chains.getChain(Network.localhost)
-  ..jsonRpcUrl = rpcUrl
-  ..bundlerUrl = bundlerUrl;
+final Chain chain = Chains.getChain(Network.baseTestnet)
+    // For Safe Accounts, use `Constants.safeProxyFactoryAddress` as the account factory.
+    ..accountFactory = Constants.lightAccountFactoryAddressv07
+    ..bundlerUrl = rpc
+    ..paymasterUrl = rpc;
 ```
 
-The `Chains` class provides a list of available networks, including `ethereum`, `polygon`, `optimism`, `base`, `arbitrumOne`, `linea`, `opBnB`, `scroll`, and testnets like `sepolia`, `mumbai`, and `baseTestnet`. You can also use `localhost` for local development.
+The `Chains` class provides a list of available networks, including `ethereum`, `polygon`, `optimism`, `base`, `arbitrum`, `linea`, `fuse`, `scroll`, and testnets like `sepolia` and `baseTestnet`.
 
 ### Signer Setup
 
@@ -58,11 +57,15 @@ final PrivateKeySigner signer = PrivateKeySigner.fromJson("source", "password");
 The `PassKeySigner` conforms to the multi-signer interface and allows you to sign payloads using your device's passkeys. It falls under the `secp256r1` category and can be verified on-chain using a `P256 Verifier` on-chain:
 
 ```dart
-final PassKeySigner pkpSigner = PassKeySigner(
-  "variance.space", // Replace with your relying party ID (domain name)
-  "variance", // Replace with your relying party name
-  "https://variance.space", // Replace with your relying party origin
-);
+final options = PassKeysOptions(
+        name: "variance", // Replace with your relying party name
+        namespace: "variance.space", // Replace with your relying party ID (domain name)
+        origin: "https://variance.space", // Replace with your relying party origin
+        userVerification: "required",
+        requireResidentKey: true,
+        sharedWebauthnSigner: EthereumAddress.fromHex("0xfD90FAd33ee8b58f32c00aceEad1358e4AFC23f9"));
+
+final PassKeySigner signer = PassKeySigner(options);
 
 // Register a new passkey
 PassKeyPair pkp = await pkpSigner.register("user@variance.space", "test user");
@@ -70,27 +73,16 @@ PassKeyPair pkp = await pkpSigner.register("user@variance.space", "test user");
 
 The PassKeySigner supports various signing methods, including `personalSign`, `signToEc`, and `signToPasskeySignature`.
 
-#### Hardware Signers (Secure Enclave, Keystore)
-
-The `HardwareSigner` conforms to the multi-signer interface and enables your app to generate keypairs inside the security chip of your device (Secure Enclave for iOS, Android Keystore for Android). This allows you to sign payloads with your device's hardware:
-
-```dart
-final HardwareSigner hwdSigner = HardwareSigner.withTag("my app tag");
-
-// Generate a new keypair for the tag (or return an existing one)
-final P256Credential credential = await hwdSigner.generateKeyPair();
-
-// Get an existing public key from the device
-final publicKey = await hwdSigner.getPublicKey(); // Returns a tuple (x, y)
-
-// Check if a public key has been created for the app
-final bool isCreated = await hwdSigner.isKeyCreated();
-```
-
 #### EOA Wallet (Seed Phrases)
 
 The `EOAWallet` signer allows you to sign transactions using seed phrases (also known as mnemonics). It conforms to the multi-signer interface and can be used with simple smart accounts and safe accounts.
 Once you have set up the appropriate signer, you can create a `SmartWalletFactory` instance and proceed with creating and interacting with smart wallets.
+
+```dart
+final signer = EOAWallet.createWallet();
+```
+
+> A note on prefix: `SignatureOptions` is used to specify a prefix for the specific signer. This is required for alchemy light accounts. It is not required for safe smart accounts.
 
 ### Smart Wallet Factory
 
@@ -102,11 +94,11 @@ final SmartWalletFactory smartWalletFactory = SmartWalletFactory(chain, signer);
 
 ### Creating a Smart Wallet
 
-The `SmartWalletFactory` class provides methods to create different types of smart wallets, such as `SimpleAccount`, `P256Account`, and `SafeAccount`. Here's an example of creating a simple smart account:
+The `SmartWalletFactory` class provides methods to create different types of smart wallets, such as `AlchemyLightAccount`, `SafeAccountWithPasskey`, and `SafeAccount`. Here's an example of creating a simple smart account:
 
 ```dart
 final salt = Uint256.zero;
-final SmartWallet wallet = await smartWalletFactory.createSimpleAccount(salt);
+final SmartWallet wallet = await smartWalletFactory.createSafeAccount(salt);
 print("Simple wallet address: ${wallet.address.hex}");
 ```
 

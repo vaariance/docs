@@ -15,6 +15,9 @@ final walletSigner = EOAWallet.createWallet(); // Defaults to 12 words
 
 // Create a 24-word phrase wallet
 final walletSigner24 = EOAWallet.createWallet(WordLength.word_24);
+
+// Create a signer for AlchemyLightAccount
+final signer = EOAWallet.createWallet(WordLength.word_12, const SignatureOptions(prefix: [0]));
 ```
 
 The `createWallet` method generates a random mnemonic phrase of the specified word length (default is 12 words) and returns an `EOAWallet` instance. The mnemonic phrase is generated using the `Bip39MnemonicGenerator`, which follows the **BIP-39** standard for generating mnemonic phrases.
@@ -28,6 +31,10 @@ The `WordLength` enum represents the available word lengths for generating mnemo
 
 The `WordLength` enum when used as a parameter in the `createWallet` method can specify the desired word length when generating a new mnemonic phrase.
 
+### SignatureOptions
+
+The `SignatureOptions` class is used to specify the prefix for the signer. This is required for alchemy light accounts. It is not required for safe smart accounts.
+
 ## Recovering an EOA Wallet
 
 To recover an EOA wallet signer instance from an existing mnemonic phrase, you can use the `recoverAccount` factory method:
@@ -35,6 +42,9 @@ To recover an EOA wallet signer instance from an existing mnemonic phrase, you c
 ```dart
 final mnemonicPhrase = 'test test test test test test test test test test test junk'; // Replace with an actual mnemonic phrase
 final recoveredSigner = EOAWallet.recoverAccount(mnemonicPhrase);
+
+// Create a signer for AlchemyLightAccount
+final recoveredSigner = EOAWallet.recoverAccount(mnemonicPhrase, const SignatureOptions(prefix: [0]));
 ```
 
 ## Adding an Account

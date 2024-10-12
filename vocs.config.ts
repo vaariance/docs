@@ -81,10 +81,6 @@ export default defineConfig({
           link: "/signers/privatekey-signer",
         },
         {
-          text: "Hardware Signer",
-          link: "/signers/hardware-signer",
-        },
-        {
           text: "EOA Wallet",
           link: "/signers/eoawallet",
         },

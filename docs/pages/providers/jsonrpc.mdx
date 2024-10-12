@@ -73,20 +73,6 @@ try {
 
 In this example, we call the `getBlockInformation` method, specifying the block number (in this case, 'latest') and whether to include full transaction objects (`isContainFullObj`).
 
-### getEip1559GasPrice
-
-The `getEip1559GasPrice` method allows you to retrieve the gas prices according to the EIP-1559 specification. Here's an example:
-
-```dart
-try {
-  final gasPrices = await jsonRpcProvider.getEip1559GasPrice(); // [!code focus]
-  print('Max fee per gas: ${gasPrices['maxFeePerGas']}');
-  print('Max priority fee per gas: ${gasPrices['maxPriorityFeePerGas']}');
-} catch (e) {
-  print('Error retrieving gas prices: $e');
-}
-```
-
 ### getGasPrice
 
 The `getGasPrice` method allows you to retrieve the current gas prices. It tries to retrieve the gas prices according to the EIP-1559 specification first, and if that fails, it falls back to retrieving the legacy gas price. Here's an example:
@@ -101,17 +87,12 @@ try {
 }
 ```
 
-### getLegacyGasPrice
-
-The `getLegacyGasPrice` method allows you to retrieve the legacy gas price. Here's an example:
+You can also specify the gas rate in this case it can be `low`, `normal` or `high`. by passing the rate as an argument to the `getGasPrice` method. Here's an example:
 
 ```dart
-try {
-  final legacyGasPrice = await jsonRpcProvider.getLegacyGasPrice(); // [!code focus]
-  print('Legacy gas price: $legacyGasPrice');
-} catch (e) {
-  print('Error retrieving legacy gas price: $e');
-}
+final gasPrices = await jsonRpcProvider.getGasPrice(GasEstimation.normal); // [!code focus]
+print('Max fee per gas: ${gasPrices['maxFeePerGas']}');
+print('Max priority fee per gas: ${gasPrices['maxPriorityFeePerGas']}');
 ```
 
 If you require the full features of a JSON-RPC client, you can consider using the `Web3Client` class from the `web3dart` package instead which contains all the methods of the `eth_rpc`.

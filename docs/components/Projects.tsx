@@ -16,7 +16,7 @@ const projects: ProjectsProps[] = [
   {
     title: "Web3 Signers",
     description:
-      "A flutter plugin that provides a uniform interface for signing EIP-1271 messages using passkeys, secure-enclaves and private keys.",
+      "A flutter plugin that provides a uniform interface for signing EIP-1271 messages using passkeys, Hd wallets and private keys.",
     url: "https://pub.dev/packages/web3_signers",
   },
   {

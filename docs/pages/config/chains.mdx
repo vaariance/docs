@@ -1,10 +1,10 @@
 # Configuring Networks and Chains
 
-A convenient way to configure and work with different Ethereum-based blockchain networks and their corresponding chain configurations. The `Chain` class represents a specific chain, and the `Chains` class offers a predefined set of popular networks and their chain configurations.
+A convenient way to configure and work with different EVM networks and their corresponding chain configurations. The `Chain` class represents a specific chain, and the `Chains` class offers a predefined set of popular networks and their chain configurations.
 
 ## The Chain Class
 
-The `Chain` class encapsulates the configuration details of a specific blockchain chain. It includes the following properties:
+The `Chain` class encapsulates the configuration details of a specific EVM network. It includes the following properties:
 
 1. `chainId`: The unique identifier of the chain.
 2. `explorer`: The URL of the block explorer for this chain.
@@ -13,6 +13,7 @@ The `Chain` class encapsulates the configuration details of a specific blockchai
 5. `jsonRpcUrl`: The URL of the JSON-RPC endpoint for this chain.
 6. `bundlerUrl`: The URL of the bundler service for this chain.
 7. `paymasterUrl`: The URL of the paymaster service for this chain (optional).
+8. `testnet`: A boolean flag indicating whether the chain is a testnet.
 
 You can create a new instance of the `Chain` class by providing the required properties:
 
@@ -30,7 +31,7 @@ final chain = Chain(
 
 ## The Chains Class
 
-The `Chains` class provides a predefined set of popular Ethereum-based blockchain networks and their corresponding chain configurations. You can obtain the `Chain` instance for a specific network using the `getChain` method:
+The `Chains` class provides a predefined set of popular EVM networks and their corresponding chain configurations. You can obtain the `Chain` instance for a specific network using the `getChain` method:
 
 ```dart
 final mainnetChain = Chains.getChain(Network.ethereum);
@@ -39,9 +40,8 @@ final sepoliaChain = Chains.getChain(Network.sepolia);
 
 The `Network` enum represents the available networks, including:
 
-- Mainnet networks: `ethereum`, `polygon`, `optimism`, `base`, `arbitrumOne`, `linea`, `opBnB`, `scroll`
-- Testnets: `sepolia`, `mumbai`, `baseTestnet`
-- Local development: `localhost`
+- Mainnet networks: `ethereum`, `polygon`, `optimism`, `base`, `arbitrum`, `linea`, `fuse`, `scroll`
+- Testnets: `sepolia`, `baseTestnet`
 
 Each predefined network has its corresponding chain configuration, including the `chainId`, `explorer`, `jsonRpcUrl`, and `entrypoint` address.
 You can access other chain-specific constants, such as contract addresses, through the `Constants` class:
@@ -61,7 +61,7 @@ final mainnetChain = Chains.getChain(Network.ethereum); // [!code focus]
 final walletFactory = SmartWalletFactory(mainnetChain, signer);
 
 final salt = Uint256.zero;
-final wallet = await walletFactory.createSimpleAccount(salt);
+final wallet = await walletFactory.createSafeAccount(salt);
 
 print("wallet created ${wallet.address.hex} ");
 ```

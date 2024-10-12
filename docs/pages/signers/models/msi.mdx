@@ -9,11 +9,6 @@ The `MultiSignerInterface` is implemented by the following classes:
 - `PrivateKeySigner`: A signer that uses a private key to sign payloads.
 - `PassKeySigner`: A signer that uses a passkey to sign payloads.
 - `EOAWallet`: A signer that represents an Externally Owned Account (EOA) wallet.
-- `HardwareSigner`: A signer that uses hardware-based security features (e.g., Secure Enclave, Android Keystore) to sign payloads.
-
-## Properties
-
-- `dummySignature`: A valid signature that can be used for testing purposes, specifically to simulate user operations on the entrypoint. Implementations must specify a dummy signature that matches their transaction signature standard.
 
 ## Methods
 
@@ -83,6 +78,14 @@ final signature = await signToEc(hash);
 final signature = await signToEc(hash, 0); // Signs using the account at index 0
 ```
 
+4. **getDummySignature**
+
+```dart
+String getDummySignature();
+```
+
+A valid signature that can be used for testing purposes, specifically to simulate user operations on the entrypoint. Implementations must specify a dummy signature that matches their transaction signature standard.
+
 ## Usage
 
 To use the `MSI`, you can create a class that extends it and implements the required methods. This allows you to define custom signer implementations that adhere to the common interface.
@@ -90,7 +93,7 @@ To use the `MSI`, you can create a class that extends it and implements the requ
 ```dart
 class CustomSigner extends MultiSignerInterface {
   @override
-  String dummySignature = "0x...";
+  String getDummySignature();
 
   @override
   String getAddress({int? index}) {
@@ -111,4 +114,4 @@ class CustomSigner extends MultiSignerInterface {
 
 By implementing the `MultiSignerInterface`, you ensure that your custom signer follows the common interface and can be used interchangeably with other signers that also implement this interface.
 
-The `MultiSignerInterface` provides a standardized way to interact with different types of signers, including hardware-based signers like the `HardwareSigner`, making it easier to work with various signing mechanisms in the Ethereum ecosystem.
+The `MultiSignerInterface` provides a standardized way to interact with different types of signers, making it easier to work with various signing mechanisms in the Ethereum ecosystem.
